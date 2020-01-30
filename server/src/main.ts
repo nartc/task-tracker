@@ -7,6 +7,9 @@ import { AppModule } from './app.module';
 import { IConfiguration } from './common/configuration/configuration';
 import { CONFIG } from './common/configuration/configuration.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { queues } from './common/queues/queues';
+
+const Arena = require('bull-arena');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +22,21 @@ async function bootstrap() {
 
   app.use(compression());
   app.use(helmet());
+
+  const arena = Arena(
+    {
+      queues: queues.map(q => ({
+        name: q.name,
+        prefix: q.options.prefix,
+        hostId: q.name,
+        redis: { host: config.redis.host, port: config.redis.port },
+        type: 'bull',
+      })),
+    },
+    config.arena,
+  );
+
+  app.use('/arena', arena);
 
   const options = new DocumentBuilder()
     .setTitle('Task Tracker API')

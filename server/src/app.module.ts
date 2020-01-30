@@ -8,6 +8,7 @@ import {
   CONFIG,
   ConfigurationModule,
 } from './common/configuration/configuration.module';
+import { QueueModule } from './common/queues/queue.module';
 import { RoleModule } from './role/role.module';
 import { SecurityModule } from './security/security.module';
 import { UserModule } from './user/user.module';
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
     }),
     ConfigurationModule.forRoot(),
     AutomapperModule.forRoot(),
+    QueueModule,
     RoleModule,
     UserModule,
     SecurityModule,

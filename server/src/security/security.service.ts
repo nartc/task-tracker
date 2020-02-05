@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   BadRequestException,
   Injectable,
@@ -5,11 +6,15 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, genSalt, hash } from 'bcrypt';
+import { Queue } from 'bull';
 import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
 import { IConfiguration } from '../common/configuration/configuration';
 import { InjectConfig } from '../common/configuration/configuration.module';
+import { UserJob } from '../common/queues/consumers/user/user.jobs';
+import { userQueue } from '../common/queues/queues';
 import { Role } from '../role/models/role.model';
 import { RoleService } from '../role/role.service';
+import { User } from '../user/models/user.model';
 import { UserInformationVm } from '../user/models/vms/user-information.vm';
 import { UserService } from '../user/user.service';
 import { AuthUser } from './auth-user';
@@ -26,6 +31,7 @@ export class SecurityService {
     private readonly jwtService: JwtService,
     @InjectMapper() private readonly mapper: AutoMapper,
     @InjectConfig() private readonly config: IConfiguration,
+    @InjectQueue(userQueue.name) private readonly userQueue: Queue,
   ) {}
 
   private static async comparePassword(
@@ -54,7 +60,7 @@ export class SecurityService {
 
   async validateUser(payload: JwtPayload): Promise<AuthUser> {
     const user = await this.userService.findByEmail(payload.email);
-    return this.mapper.mapAsync(user, AuthUser);
+    return this.mapper.mapAsync(user, AuthUser, User);
   }
 
   async register(params: RegisterParamsVm): Promise<void> {
@@ -67,7 +73,7 @@ export class SecurityService {
     const newUser = this.userService.createModel(params);
     newUser.password = await this.hashPassword(password);
     newUser.role = await this.roleService.findById(roleId);
-    await this.userService.create(newUser);
+    await this.userQueue.add(UserJob.AddUserQueue, newUser);
   }
 
   async login(params: LoginParamsVm): Promise<LoginResultVm> {
@@ -90,7 +96,7 @@ export class SecurityService {
 
     const result = new LoginResultVm();
     result.token = token;
-    result.user = this.mapper.map(user, UserInformationVm);
+    result.user = this.mapper.map(user, UserInformationVm, User);
     return result;
   }
 }

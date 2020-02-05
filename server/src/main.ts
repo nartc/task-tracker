@@ -37,12 +37,13 @@ async function bootstrap() {
   );
 
   app.use('/arena', arena);
+  logger.debug(`Arena Dashboard enabled ${config.app.domain}/arena`);
 
   const options = new DocumentBuilder()
     .setTitle('Task Tracker API')
     .setDescription('API Documentation for Task Tracker')
     .setVersion('1.0.0')
-    .addServer(`http://${config.app.domain}/api/`, 'Development API')
+    .addServer(`${config.app.domain}/api/`, 'Development API')
     .addBearerAuth({ type: 'apiKey', in: 'header', name: 'Authorization' })
     .build();
 
@@ -67,7 +68,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(config.app.port, () => {
-    logger.log(`Listening at ${config.app.domain}/api`);
+    logger.debug(`Listening at ${config.app.domain}/api`);
   });
 }
 

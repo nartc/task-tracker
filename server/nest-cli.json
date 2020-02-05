@@ -8,7 +8,8 @@
         "options": {
           "dtoFileNameSuffix": [".vm.ts"]
         }
-      }
+      },
+      "@nartc/automapper-transformer-plugin"
     ]
   }
 }

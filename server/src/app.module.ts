@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AutomapperModule } from 'nestjsx-automapper';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { IConfiguration } from './common/configuration/configuration';
 import {
   CONFIG,
@@ -11,6 +9,7 @@ import {
 import { QueueModule } from './common/queues/queue.module';
 import { RoleModule } from './role/role.module';
 import { SecurityModule } from './security/security.module';
+import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -33,8 +32,7 @@ import { UserModule } from './user/user.module';
     RoleModule,
     UserModule,
     SecurityModule,
+    TaskModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

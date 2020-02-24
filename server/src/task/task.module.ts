@@ -7,6 +7,7 @@ import { Assignment, AssignmentNote } from './models/assignment.model';
 import { Task } from './models/task.model';
 import { AssignmentNoteVm, AssignmentVm } from './models/vms/assignment.vm';
 import { TaskVm } from './models/vms/task.vm';
+import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 
 @Profile()
@@ -41,6 +42,7 @@ class TaskProfile extends MappingProfileBase {
       { name: Assignment.modelName, schema: Assignment.schema },
     ]),
   ],
+  controllers: [TaskController],
   providers: [TaskService, AssignmentService],
 })
 export class TaskModule {}

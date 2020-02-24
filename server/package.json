@@ -27,17 +27,18 @@
     "@nestjs/mongoose": "6.3.1",
     "@nestjs/passport": "6.1.1",
     "@nestjs/platform-express": "6.11.5",
-    "@nestjs/swagger": "4.2.4",
+    "@nestjs/swagger": "4.2.7",
     "@typegoose/typegoose": "6.2.2",
     "bcrypt": "3.0.7",
     "bull": "3.12.1",
     "bull-arena": "2.7.1",
+    "class-validator": "^0.11.0",
     "compression": "1.7.4",
     "helmet": "3.21.2",
     "mongoose": "5.8.11",
     "mongoose-autopopulate": "0.11.0",
     "mongoose-lean-virtuals": "0.5.0",
-    "nestjsx-automapper": "2.0.19",
+    "nestjsx-automapper": "2.0.28",
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
@@ -46,7 +47,7 @@
     "swagger-ui-express": "4.1.3"
   },
   "devDependencies": {
-    "@nartc/automapper-transformer-plugin": "1.0.12",
+    "@nartc/automapper-transformer-plugin": "1.0.16",
     "@nestjs/cli": "6.14.1",
     "@nestjs/schematics": "6.9.3",
     "@nestjs/testing": "6.11.5",
@@ -88,7 +89,7 @@
     "testEnvironment": "node"
   },
   "prettier": {
-    "printWidth": 80,
+    "printWidth": 120,
     "tabWidth": 2,
     "semi": true,
     "singleQuote": true,

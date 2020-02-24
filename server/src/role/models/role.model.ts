@@ -1,9 +1,9 @@
-import { plugin, prop } from '@typegoose/typegoose';
-import * as leanVirtuals from 'mongoose-lean-virtuals';
+import { prop } from '@typegoose/typegoose';
 import { BaseDocument } from '../../common/base.model';
+import { useMongoosePlugins } from '../../common/decorators/use-mongoose-plugins.decorator';
 import { Permission } from '../../common/permissions/permission';
 
-@plugin(leanVirtuals)
+@useMongoosePlugins()
 export class Role extends BaseDocument {
   @prop({ default: false })
   isGlobal: boolean;

@@ -1,15 +1,12 @@
 import { InjectQueue } from '@nestjs/bull';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, genSalt, hash } from 'bcrypt';
 import { Queue } from 'bull';
 import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
 import { IConfiguration } from '../common/configuration/configuration';
 import { InjectConfig } from '../common/configuration/configuration.module';
+import { CurrentUserService } from '../common/current-user/current-user.service';
 import { UserJob } from '../common/queues/consumers/user/user.jobs';
 import { userQueue } from '../common/queues/queues';
 import { Role } from '../role/models/role.model';
@@ -29,15 +26,13 @@ export class SecurityService {
     private readonly userService: UserService,
     private readonly roleService: RoleService,
     private readonly jwtService: JwtService,
+    private readonly currentUserService: CurrentUserService,
     @InjectMapper() private readonly mapper: AutoMapper,
     @InjectConfig() private readonly config: IConfiguration,
     @InjectQueue(userQueue.name) private readonly userQueue: Queue,
   ) {}
 
-  private static async comparePassword(
-    password: string,
-    encrypt: string,
-  ): Promise<boolean> {
+  private static async comparePassword(password: string, encrypt: string): Promise<boolean> {
     try {
       return await compare(password, encrypt);
     } catch (e) {
@@ -60,7 +55,9 @@ export class SecurityService {
 
   async validateUser(payload: JwtPayload): Promise<AuthUser> {
     const user = await this.userService.findByEmail(payload.email);
-    return this.mapper.mapAsync(user, AuthUser, User);
+    const authUser = await this.mapper.mapAsync(user, AuthUser, User);
+    this.currentUserService.setCurrentUser(authUser);
+    return authUser;
   }
 
   async register(params: RegisterParamsVm): Promise<void> {
@@ -84,10 +81,7 @@ export class SecurityService {
       throw new BadRequestException(email, 'Wrong credentials');
     }
 
-    const isMatched = await SecurityService.comparePassword(
-      password,
-      user.password,
-    );
+    const isMatched = await SecurityService.comparePassword(password, user.password);
     if (!isMatched) {
       throw new BadRequestException(password, 'Wrong credentials');
     }

@@ -6,14 +6,8 @@ import { DocumentQuery, Query, Types } from 'mongoose';
 import { BaseDocument } from './base.model';
 
 export const _leanOptions = { virtuals: true, autopopulate: true };
-type QueryList<T extends BaseDocument> = DocumentQuery<
-  Array<DocumentType<T>>,
-  DocumentType<T>
->;
-type QueryItem<T extends BaseDocument> = DocumentQuery<
-  DocumentType<T>,
-  DocumentType<T>
->;
+type QueryList<T extends BaseDocument> = DocumentQuery<Array<DocumentType<T>>, DocumentType<T>>;
+type QueryItem<T extends BaseDocument> = DocumentQuery<DocumentType<T>, DocumentType<T>>;
 
 export abstract class BaseService<T extends BaseDocument> {
   protected model: ReturnModelType<AnyParamConstructor<T>>;
@@ -52,8 +46,8 @@ export abstract class BaseService<T extends BaseDocument> {
     }
   }
 
-  findOne(filter = {}): QueryItem<T> {
-    return this.model.findOne(filter);
+  findOne(filter = {}, disabledAutopopulate: boolean = false): QueryItem<T> {
+    return this.model.findOne(filter, {}, { autopopulate: !disabledAutopopulate });
   }
 
   async findOneAsync(filter = {}): Promise<DocumentType<T>> {

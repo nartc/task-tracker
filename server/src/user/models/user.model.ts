@@ -1,12 +1,11 @@
 import { AutoMap } from '@nartc/automapper';
-import { plugin, prop, Ref } from '@typegoose/typegoose';
-import * as autoPopulate from 'mongoose-autopopulate';
-import * as leanVirtuals from 'mongoose-lean-virtuals';
+import { prop, Ref } from '@typegoose/typegoose';
+
 import { BaseDocument } from '../../common/base.model';
+import { useMongoosePlugins } from '../../common/decorators/use-mongoose-plugins.decorator';
 import { Role } from '../../role/models/role.model';
 
-@plugin(autoPopulate)
-@plugin(leanVirtuals)
+@useMongoosePlugins()
 export class User extends BaseDocument {
   @prop({ default: false })
   isSuper: boolean;

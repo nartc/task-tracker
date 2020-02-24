@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Queue } from 'bull';
 import { AutomapperModule } from 'nestjsx-automapper';
 import { IConfiguration } from './common/configuration/configuration';
-import {
-  CONFIG,
-  ConfigurationModule,
-} from './common/configuration/configuration.module';
+import { CONFIG, ConfigurationModule } from './common/configuration/configuration.module';
+import { CurrentUserModule } from './common/current-user/current-user.module';
+import { RoleJob } from './common/queues/consumers/role/role.jobs';
 import { QueueModule } from './common/queues/queue.module';
+import { roleQueue } from './common/queues/queues';
 import { RoleModule } from './role/role.module';
 import { SecurityModule } from './security/security.module';
 import { TaskModule } from './task/task.module';
@@ -29,10 +31,17 @@ import { UserModule } from './user/user.module';
     ConfigurationModule.forRoot(),
     AutomapperModule.forRoot(),
     QueueModule,
+    CurrentUserModule,
     RoleModule,
     UserModule,
     SecurityModule,
     TaskModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(@InjectQueue(roleQueue.name) private readonly roleQueue: Queue) {}
+
+  async onModuleInit() {
+    await this.roleQueue.add(RoleJob.PopulateSystemRolesQueue);
+  }
+}

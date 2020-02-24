@@ -10,12 +10,15 @@ export const userQueue = {
   prefix: '@@userQueue_',
 };
 
-export const queues = [
-  {
-    name: userQueue.name,
-    options: {
-      ...queueDefaultOptions,
-      prefix: userQueue.prefix,
-    },
-  },
-];
+export const roleQueue = {
+  name: 'roleQueue',
+  prefix: '@@roleQueue_',
+};
+
+const _queues = [userQueue, roleQueue];
+
+export const queues = _queues.map(q => ({
+  name: q.name,
+  options: { ...queueDefaultOptions, prefix: q.prefix },
+}));
+export default _queues;

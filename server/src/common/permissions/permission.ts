@@ -1,6 +1,7 @@
 import { PermissionScore } from './permission-scrore.enum';
 
-export type DomainModels = 'role' | 'user';
+export const domainModels = ['role', 'user', 'task', 'assignment'] as const;
+export type DomainModels = typeof domainModels[number];
 export type Permission = {
   [key in DomainModels]?: PermissionScore;
 };

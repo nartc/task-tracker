@@ -1,5 +1,5 @@
 import { AutoMap } from '@nartc/automapper';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { buildSchema, prop } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 
@@ -33,14 +33,16 @@ export abstract class BaseDocument {
 }
 
 export abstract class BaseVm {
-  @ApiProperty({ type: String, format: 'date-time' })
+  @ApiPropertyOptional({ type: String, format: 'date-time' })
   @AutoMap()
   createdAt?: Date;
-  @ApiProperty({ type: String, format: 'date-time' })
+  @ApiPropertyOptional({ type: String, format: 'date-time' })
   @AutoMap()
   updatedAt?: Date;
+  @ApiPropertyOptional()
   @AutoMap()
   id?: string;
+  @ApiProperty()
   @AutoMap()
   isActive: boolean;
 }

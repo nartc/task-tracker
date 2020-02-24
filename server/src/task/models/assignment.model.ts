@@ -1,6 +1,7 @@
 import { AutoMap } from '@nartc/automapper';
 import { arrayProp, prop, Ref } from '@typegoose/typegoose';
 import { BaseDocument } from '../../common/base.model';
+import { useMongoosePlugins } from '../../common/decorators/use-mongoose-plugins.decorator';
 import { User } from '../../user/models/user.model';
 import { TaskStatus } from './task-status.enum';
 
@@ -18,6 +19,7 @@ export class AssignmentNote {
   content: string;
 }
 
+@useMongoosePlugins()
 export class Assignment extends BaseDocument {
   @prop({ ref: User, autopopulate: true, default: null })
   @AutoMap(() => User)

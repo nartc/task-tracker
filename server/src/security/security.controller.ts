@@ -1,9 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  ApiErrors,
-  ApiOperationId,
-} from '../common/decorators/swagger.decorator';
+import { ApiErrors, ApiOperationId } from '../common/decorators/swagger.decorator';
 import { SecurityService } from './security.service';
 import { LoginParamsVm } from './vms/login-params.vm';
 import { LoginResultVm } from './vms/login-result.vm';
@@ -16,7 +13,7 @@ export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}
 
   @Post('register')
-  @ApiOperationId()
+  @ApiOperationId({ summary: 'Register a new user' })
   register(@Body() params: RegisterParamsVm): Promise<void> {
     return this.securityService.register(params);
   }

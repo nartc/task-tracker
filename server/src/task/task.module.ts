@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AutoMapper, MappingProfileBase, Profile } from 'nestjsx-automapper';
+import { AutoMapper, mapWith, Profile, ProfileBase } from 'nestjsx-automapper';
 import { UserInformationVm } from '../user/models/vms/user-information.vm';
 import { AssignmentService } from './assignment.service';
 import { Assignment, AssignmentNote } from './models/assignment.model';
@@ -11,26 +11,32 @@ import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 
 @Profile()
-class TaskProfile extends MappingProfileBase {
+class TaskProfile extends ProfileBase {
   constructor(mapper: AutoMapper) {
     super();
     mapper
       .createMap(Task, TaskVm)
       .forMember(
         d => d.createdBy,
-        opts => opts.mapWith(UserInformationVm, s => s.createdBy),
+        mapWith(UserInformationVm, s => s.createdBy),
       )
       .forMember(
         d => d.updatedBy,
-        opts => opts.mapWith(UserInformationVm, s => s.updatedBy),
+        mapWith(UserInformationVm, s => s.updatedBy),
       );
-    mapper.createMap(Assignment, AssignmentVm).forMember(
-      d => d.assignedTo,
-      opts => opts.mapWith(UserInformationVm, s => s.assignedTo),
-    );
+    mapper
+      .createMap(Assignment, AssignmentVm)
+      .forMember(
+        d => d.assignedTo,
+        mapWith(UserInformationVm, s => s.assignedTo),
+      )
+      .forMember(
+        d => d.notes,
+        mapWith(AssignmentNoteVm, s => s.notes),
+      );
     mapper.createMap(AssignmentNote, AssignmentNoteVm).forMember(
       d => d.addedBy,
-      opts => opts.mapWith(UserInformationVm, s => s.addedBy),
+      mapWith(UserInformationVm, s => s.addedBy),
     );
   }
 }

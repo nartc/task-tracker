@@ -21,11 +21,20 @@ export class RoleService extends BaseService<Role> {
   }
 
   async createSystemRoles(): Promise<void> {
-    if (await this.findOneAsync({ roleName: 'Super Admin' })) {
+    const systemAdminRole = await this.findSystemAdminRole();
+    if (systemAdminRole) {
       throw new BadRequestException('System Roles exist');
     }
 
     const role = this.createModel(superAdminRole);
     await this.create(role);
+  }
+
+  private async findSystemAdminRole(): Promise<Role> {
+    try {
+      return this.findOne().where('roleName').equals('System Admin').exec();
+    } catch (e) {
+      RoleService.throwMongoError(e);
+    }
   }
 }

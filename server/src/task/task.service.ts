@@ -20,9 +20,7 @@ export class TaskService extends BaseService<Task> {
   }
 
   findTaskByName(name: string): Promise<Task> {
-    return this.findOne({ name }, true)
-      .lean()
-      .exec();
+    return this.findOne(true, true).where('name').equals(name).exec();
   }
 
   async createTask(params: CreateTaskParamsVm): Promise<TaskVm> {

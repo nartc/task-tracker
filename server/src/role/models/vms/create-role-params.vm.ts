@@ -27,7 +27,7 @@ export class CreateRoleParamsVm {
   @ApiProperty({
     default: {},
     description: 'Permissions dictionary for this role',
-    example: { user: 7, role: 1 },
+    example: { user: 7, role: 1, task: 1, assignment: 1 },
   })
   permissions?: Permission;
 }

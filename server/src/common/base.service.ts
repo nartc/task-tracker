@@ -2,10 +2,9 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { DocumentType, ReturnModelType } from '@typegoose/typegoose';
 import { AnyParamConstructor } from '@typegoose/typegoose/lib/types';
 import { MongoError } from 'mongodb';
-import { DocumentQuery, Query, Types } from 'mongoose';
+import { DocumentQuery, FilterQuery, Query, Types } from 'mongoose';
 import { BaseDocument } from './base.model';
 
-export const _leanOptions = { virtuals: true, autopopulate: true };
 type QueryList<T extends BaseDocument> = DocumentQuery<Array<DocumentType<T>>, DocumentType<T>>;
 type QueryItem<T extends BaseDocument> = DocumentQuery<DocumentType<T>, DocumentType<T>>;
 
@@ -28,50 +27,35 @@ export abstract class BaseService<T extends BaseDocument> {
     }
   }
 
+  protected get leanOptions() {
+    return { virtuals: true, autopopulate: true };
+  }
+
   createModel(doc?: Partial<T>): T {
     return new this.model(doc);
   }
 
-  findAll(filter = {}): QueryList<T> {
-    return this.model.find(filter);
+  findAll(lean: boolean = false, autopopulate: boolean = false): QueryList<T> {
+    const query = this.model.find();
+    query.setOptions({ lean, autopopulate });
+    return query;
   }
 
-  async findAllAsync(filter = {}): Promise<DocumentType<T>[]> {
-    try {
-      return await this.findAll(filter)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
+  findOne(lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
+    let query = this.model.findOne();
+    query = query.setOptions({ autopopulate });
+
+    if (lean) {
+      query = query.lean(this.leanOptions);
     }
+
+    return query;
   }
 
-  findOne(filter = {}, disabledAutopopulate: boolean = false): QueryItem<T> {
-    return this.model.findOne(filter, {}, { autopopulate: !disabledAutopopulate });
-  }
-
-  async findOneAsync(filter = {}): Promise<DocumentType<T>> {
-    try {
-      return await this.findOne(filter)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
-    }
-  }
-
-  findById(id: string): QueryItem<T> {
-    return this.model.findById(BaseService.toObjectId(id));
-  }
-
-  async findByIdAsync(id: string): Promise<DocumentType<T>> {
-    try {
-      return await this.findById(id)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
-    }
+  findById(id: string, lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
+    const query = this.model.findById(BaseService.toObjectId(id));
+    query.setOptions({ lean, autopopulate });
+    return query;
   }
 
   async create(item: T): Promise<DocumentType<T>> {
@@ -82,55 +66,31 @@ export abstract class BaseService<T extends BaseDocument> {
     }
   }
 
-  delete(filter = {}): QueryItem<T> {
-    return this.model.findOneAndDelete(filter);
+  delete(lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
+    const query = this.model.findOneAndDelete();
+    query.setOptions({ lean, autopopulate });
+    return query;
   }
 
-  async deleteAsync(filter = {}): Promise<DocumentType<T>> {
-    try {
-      return await this.delete(filter)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
-    }
+  deleteById(id: string, lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
+    const query = this.model.findByIdAndDelete(BaseService.toObjectId(id));
+    query.setOptions({ lean, autopopulate });
+    return query;
   }
 
-  deleteById(id: string): QueryItem<T> {
-    return this.model.findByIdAndDelete(BaseService.toObjectId(id));
+  update(item: T, lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
+    return this.model
+      .findByIdAndUpdate(BaseService.toObjectId(item.id), item, {
+        new: true,
+      })
+      .setOptions({ lean, autopopulate });
   }
 
-  async deleteByIdAsync(id: string): Promise<DocumentType<T>> {
-    try {
-      return await this.deleteById(id)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
-    }
-  }
-
-  update(item: T): QueryItem<T> {
-    return this.model.findByIdAndUpdate(BaseService.toObjectId(item.id), item, {
-      new: true,
-    });
-  }
-
-  async updateAsync(item: T): Promise<DocumentType<T>> {
-    try {
-      return await this.update(item)
-        .lean(_leanOptions)
-        .exec();
-    } catch (e) {
-      BaseService.throwMongoError(e);
-    }
-  }
-
-  count(filter = {}): Query<number> {
+  count(filter: FilterQuery<DocumentType<T>> = {}): Query<number> {
     return this.model.count(filter);
   }
 
-  async countAsync(filter = {}): Promise<number> {
+  async countAsync(filter: FilterQuery<DocumentType<T>> = {}): Promise<number> {
     try {
       return await this.count(filter);
     } catch (e) {

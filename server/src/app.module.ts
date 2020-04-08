@@ -29,7 +29,7 @@ import { UserModule } from './user/user.module';
       }),
     }),
     ConfigurationModule.forRoot(),
-    AutomapperModule.forRoot(),
+    AutomapperModule.withMapper(),
     QueueModule,
     CurrentUserModule,
     RoleModule,

@@ -16,6 +16,7 @@ export class AssignmentNote {
   @AutoMap(() => User)
   addedBy: Ref<User>;
   @prop({ required: true, minlength: 6 })
+  @AutoMap()
   content: string;
 }
 

@@ -2,6 +2,7 @@ import { AutoMap } from '@nartc/automapper';
 import { BaseVm } from '../../../common/base.model';
 import { UserInformationVm } from '../../../user/models/vms/user-information.vm';
 import { TaskStatus } from '../task-status.enum';
+import { TaskVm } from './task.vm';
 
 export class AssignmentNoteVm {
   createdAt: Date;
@@ -15,4 +16,5 @@ export class AssignmentVm extends BaseVm {
   @AutoMap()
   status: TaskStatus;
   notes?: AssignmentNoteVm[];
+  task: TaskVm;
 }

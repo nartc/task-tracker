@@ -4,6 +4,7 @@ import { BaseDocument } from '../../common/base.model';
 import { useMongoosePlugins } from '../../common/decorators/use-mongoose-plugins.decorator';
 import { User } from '../../user/models/user.model';
 import { TaskStatus } from './task-status.enum';
+import { Task } from './task.model';
 
 export class AssignmentNote {
   @prop()
@@ -32,4 +33,7 @@ export class Assignment extends BaseDocument {
     _id: false,
   })
   notes?: AssignmentNote[];
+  @prop({ ref: Task, autopopulate: true, default: null })
+  @AutoMap(() => Task)
+  task: Ref<Task>;
 }

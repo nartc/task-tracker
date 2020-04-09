@@ -10,6 +10,8 @@ export class Task extends BaseDocument {
   name: string;
   @prop({ required: true, minlength: 6 })
   description: string;
+  @prop({ default: 0, min: 0 })
+  assignCount: number;
   @prop({ ref: User, autopopulate: true, default: null })
   @AutoMap(() => User)
   createdBy: Ref<User>;

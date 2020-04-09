@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AutoMapper, mapWith, Profile, ProfileBase } from 'nestjsx-automapper';
+import { User } from '../user/models/user.model';
 import { UserInformationVm } from '../user/models/vms/user-information.vm';
 import { AssignmentService } from './assignment.service';
 import { Assignment, AssignmentNote } from './models/assignment.model';
@@ -23,6 +24,15 @@ class TaskProfile extends ProfileBase {
       .forMember(
         d => d.updatedBy,
         mapWith(UserInformationVm, s => s.updatedBy),
+      )
+      .reverseMap()
+      .forPath(
+        s => s.createdBy,
+        mapWith(User, d => d.createdBy),
+      )
+      .forPath(
+        s => s.updatedBy,
+        mapWith(User, d => d.updatedBy),
       );
     mapper
       .createMap(Assignment, AssignmentVm)

@@ -15,7 +15,7 @@ export class UserService extends BaseService<User> {
 
   findByEmail(email: string): Promise<User> {
     try {
-      return this.findOne(true).where('email').equals(email).exec();
+      return this.findOne(true, true).where('email').equals(email).exec();
     } catch (e) {
       UserService.throwMongoError(e);
     }

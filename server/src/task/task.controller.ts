@@ -1,6 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Permissions } from '../common/decorators/permission.decorator';
 import { ApiErrors, ApiOperationId } from '../common/decorators/swagger.decorator';
 import { UseAuthGuards } from '../common/decorators/use-auth-guards.decorator';
 import { PermissionPrivilege } from '../common/permissions/permission-priviledge.enum';
@@ -17,10 +16,23 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  @UseAuthGuards()
-  @Permissions({ task: PermissionPrivilege.Create })
+  @UseAuthGuards({ task: PermissionPrivilege.Create })
   @ApiOperationId()
   async createTask(@Body() params: CreateTaskParamsVm): Promise<TaskVm> {
     return this.taskService.createTask(params);
+  }
+
+  @Put()
+  @UseAuthGuards({ task: PermissionPrivilege.Update })
+  @ApiOperationId()
+  async updateTask(@Body() vm: TaskVm): Promise<TaskVm> {
+    return this.taskService.updateTask(vm);
+  }
+
+  @Delete(':id')
+  @UseAuthGuards({ task: PermissionPrivilege.Delete })
+  @ApiOperationId()
+  async deleteTask(@Param('id') id: string): Promise<TaskVm> {
+    return this.taskService.deleteTask(id);
   }
 }

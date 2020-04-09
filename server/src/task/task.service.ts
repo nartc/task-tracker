@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
@@ -34,6 +34,28 @@ export class TaskService extends BaseService<Task> {
     newTask.createdBy = TaskService.toObjectId(this.currentUserService.currentUser.id);
     newTask.updatedBy = TaskService.toObjectId(this.currentUserService.currentUser.id);
     const result = await this.create(newTask);
+    return this.mapper.map(result, TaskVm, Task);
+  }
+
+  async updateTask(vm: TaskVm): Promise<TaskVm> {
+    const task = await this.findById(vm.id);
+    if (task == null) {
+      throw new NotFoundException(`There's not task associated with ${vm.id}`);
+    }
+
+    const updatedTask = this.mapper.map(vm, Task, TaskVm);
+    updatedTask.updatedAt = new Date();
+    updatedTask.updatedBy = TaskService.toObjectId(this.currentUserService.currentUser.id);
+    const result = await this.update(updatedTask, true, true);
+    return this.mapper.map(result, TaskVm, Task);
+  }
+
+  async deleteTask(id: string): Promise<TaskVm> {
+    const task = await this.findById(id);
+    if (task == null) {
+      throw new NotFoundException(`There's not task associated with ${id}`);
+    }
+    const result = await this.deleteById(id, true, true);
     return this.mapper.map(result, TaskVm, Task);
   }
 }

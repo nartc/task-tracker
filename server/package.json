@@ -31,7 +31,7 @@
     "@typegoose/typegoose": "6.4.0",
     "bcrypt": "4.0.1",
     "bull": "3.13.0",
-    "bull-arena": "2.7.1",
+    "bull-arena": "2.8.1",
     "class-validator": "^0.11.1",
     "compression": "1.7.4",
     "helmet": "3.22.0",
@@ -47,7 +47,7 @@
     "swagger-ui-express": "4.1.4"
   },
   "devDependencies": {
-    "@nartc/automapper-transformer-plugin": "1.0.18",
+    "@nartc/automapper-transformer-plugin": "1.0.20",
     "@nestjs/cli": "7.1.2",
     "@nestjs/schematics": "7.0.0",
     "@nestjs/testing": "7.0.7",

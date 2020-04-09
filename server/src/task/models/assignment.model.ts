@@ -7,16 +7,13 @@ import { TaskStatus } from './task-status.enum';
 
 export class AssignmentNote {
   @prop()
-  @AutoMap()
   createdAt: Date;
   @prop()
-  @AutoMap()
   updatedAt: Date;
   @prop({ ref: User, autopopulate: true, default: null })
   @AutoMap(() => User)
   addedBy: Ref<User>;
   @prop({ required: true, minlength: 6 })
-  @AutoMap()
   content: string;
 }
 

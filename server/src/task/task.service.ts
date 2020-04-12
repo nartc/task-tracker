@@ -23,6 +23,21 @@ export class TaskService extends BaseService<Task> {
     return this.findOne(true, true).where('name').equals(name).exec();
   }
 
+  async getAll(): Promise<TaskVm[]> {
+    const result = await this.findAll(true, true).exec();
+    return this.mapper.mapArray(result, TaskVm, Task);
+  }
+
+  async getById(id: string): Promise<TaskVm> {
+    const result = await this.findById(id, true, true).exec();
+    return this.mapper.map(result, TaskVm, Task);
+  }
+
+  async getByName(name: string): Promise<TaskVm> {
+    const result = await this.findTaskByName(name);
+    return this.mapper.map(result, TaskVm, Task);
+  }
+
   async createTask(params: CreateTaskParamsVm): Promise<TaskVm> {
     const { description, name } = params;
     const task = await this.findTaskByName(name);
@@ -38,7 +53,7 @@ export class TaskService extends BaseService<Task> {
   }
 
   async updateTask(vm: TaskVm): Promise<TaskVm> {
-    const task = await this.findById(vm.id);
+    const task = await this.findById(vm.id).exec();
     if (task == null) {
       throw new NotFoundException(`There's not task associated with ${vm.id}`);
     }
@@ -46,16 +61,16 @@ export class TaskService extends BaseService<Task> {
     const updatedTask = this.mapper.map(vm, Task, TaskVm);
     updatedTask.updatedAt = new Date();
     updatedTask.updatedBy = TaskService.toObjectId(this.currentUserService.currentUser.id);
-    const result = await this.update(updatedTask, true, true);
+    const result = await this.update(updatedTask, true, true).exec();
     return this.mapper.map(result, TaskVm, Task);
   }
 
   async deleteTask(id: string): Promise<TaskVm> {
-    const task = await this.findById(id);
+    const task = await this.findById(id).exec();
     if (task == null) {
       throw new NotFoundException(`There's not task associated with ${id}`);
     }
-    const result = await this.deleteById(id, true, true);
+    const result = await this.deleteById(id, true, true).exec();
     return this.mapper.map(result, TaskVm, Task);
   }
 }

@@ -23,7 +23,7 @@ export class PermissionsGuard implements CanActivate {
     const currentUser = context.switchToHttp().getRequest<Request>().user as AuthUser;
     const hasPermission = () =>
       Object.entries(currentUser.role.permissions).every(
-        ([key, score]) => !routePermissions[key] || score >= routePermissions[key],
+        ([key, score]) => !routePermissions[key] || score & routePermissions[key],
       );
 
     return currentUser && (currentUser.isSuper || hasPermission());

@@ -6,4 +6,5 @@ export class TaskVm extends BaseVm {
   description: string;
   createdBy: UserInformationVm;
   updatedBy: UserInformationVm;
+  assignCount: number;
 }

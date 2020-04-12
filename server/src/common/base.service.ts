@@ -27,8 +27,14 @@ export abstract class BaseService<T extends BaseDocument> {
     }
   }
 
-  protected get leanOptions() {
-    return { virtuals: true, autopopulate: true };
+  protected getQueryOptions(lean: boolean, autopopulate: boolean) {
+    const option = lean ? { virtuals: true } : null;
+
+    if (option && autopopulate) {
+      option['autopopulate'] = true;
+    }
+
+    return { lean: option, autopopulate };
   }
 
   createModel(doc?: Partial<T>): T {
@@ -37,24 +43,19 @@ export abstract class BaseService<T extends BaseDocument> {
 
   findAll(lean: boolean = false, autopopulate: boolean = false): QueryList<T> {
     const query = this.model.find();
-    query.setOptions({ lean, autopopulate });
+    query.setOptions(this.getQueryOptions(lean, autopopulate));
     return query;
   }
 
   findOne(lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
     let query = this.model.findOne();
-    query = query.setOptions({ autopopulate });
-
-    if (lean) {
-      query = query.lean(this.leanOptions);
-    }
-
+    query = query.setOptions(this.getQueryOptions(lean, autopopulate));
     return query;
   }
 
   findById(id: string, lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
     const query = this.model.findById(BaseService.toObjectId(id));
-    query.setOptions({ lean, autopopulate });
+    query.setOptions(this.getQueryOptions(lean, autopopulate));
     return query;
   }
 
@@ -68,13 +69,13 @@ export abstract class BaseService<T extends BaseDocument> {
 
   delete(lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
     const query = this.model.findOneAndDelete();
-    query.setOptions({ lean, autopopulate });
+    query.setOptions(this.getQueryOptions(lean, autopopulate));
     return query;
   }
 
   deleteById(id: string, lean: boolean = false, autopopulate: boolean = false): QueryItem<T> {
     const query = this.model.findByIdAndDelete(BaseService.toObjectId(id));
-    query.setOptions({ lean, autopopulate });
+    query.setOptions(this.getQueryOptions(lean, autopopulate));
     return query;
   }
 
@@ -83,7 +84,7 @@ export abstract class BaseService<T extends BaseDocument> {
       .findByIdAndUpdate(BaseService.toObjectId(item.id), item, {
         new: true,
       })
-      .setOptions({ lean, autopopulate });
+      .setOptions(this.getQueryOptions(lean, autopopulate));
   }
 
   count(filter: FilterQuery<DocumentType<T>> = {}): Query<number> {

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiErrors, ApiOperationId } from '../common/decorators/swagger.decorator';
+import { Body, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiController, ApiOperationId } from '../common/decorators/swagger.decorator';
 import { UseAuthGuards } from '../common/decorators/use-auth-guards.decorator';
 import { PermissionPrivilege } from '../common/permissions/permission-priviledge.enum';
 import { Task } from './models/task.model';
@@ -8,12 +8,31 @@ import { CreateTaskParamsVm } from './models/vms/create-task-params.vm';
 import { TaskVm } from './models/vms/task.vm';
 import { TaskService } from './task.service';
 
-@Controller('tasks')
-@ApiTags(Task.modelName)
-@ApiErrors()
+@ApiController('tasks', Task.modelName)
 @ApiBearerAuth()
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
+
+  @Get()
+  @UseAuthGuards({ task: PermissionPrivilege.Read })
+  @ApiOperationId()
+  async getAll(): Promise<TaskVm[]> {
+    return this.taskService.getAll();
+  }
+
+  @Get('name')
+  @UseAuthGuards({ task: PermissionPrivilege.Read })
+  @ApiOperationId()
+  async getByName(@Query('name') name: string): Promise<TaskVm> {
+    return this.taskService.getByName(name);
+  }
+
+  @Get(':id')
+  @UseAuthGuards({ task: PermissionPrivilege.Read })
+  @ApiOperationId()
+  async getById(@Param('id') id: string): Promise<TaskVm> {
+    return this.taskService.getById(id);
+  }
 
   @Post()
   @UseAuthGuards({ task: PermissionPrivilege.Create })

@@ -44,7 +44,7 @@ async function bootstrap() {
     .setDescription('API Documentation for Task Tracker')
     .setVersion('1.0.0')
     .addServer(`${config.app.domain}/api/`, 'Development API')
-    .addBearerAuth({ type: 'apiKey', in: 'header', name: 'Authorization' })
+    .addBearerAuth()
     .build();
 
   const swaggerDoc = SwaggerModule.createDocument(app, options);

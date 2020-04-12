@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AutoMapper, mapWith, Profile, ProfileBase } from 'nestjsx-automapper';
 import { User } from '../user/models/user.model';
 import { UserInformationVm } from '../user/models/vms/user-information.vm';
+import { UserModule } from '../user/user.module';
 import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
 import { Assignment, AssignmentNote } from './models/assignment.model';
@@ -62,6 +63,7 @@ class TaskProfile extends ProfileBase {
       { name: Task.modelName, schema: Task.schema },
       { name: Assignment.modelName, schema: Assignment.schema },
     ]),
+    UserModule
   ],
   controllers: [TaskController, AssignmentController],
   providers: [TaskService, AssignmentService],

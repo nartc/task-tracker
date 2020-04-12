@@ -16,5 +16,5 @@ export const UseAuthGuards = (permissions?: { [key in keyof Permission]?: Permis
     Permissions(permissions)(target, propertyKey as string, descriptor);
   }
 
-  UseGuards(...guards)(target, propertyKey as string, descriptor);
+  UseGuards(...guards)(target, propertyKey, descriptor);
 };

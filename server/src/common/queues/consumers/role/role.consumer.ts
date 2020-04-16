@@ -1,4 +1,5 @@
 import { Process, Processor } from '@nestjs/bull';
+import { BadRequestException } from '@nestjs/common';
 import { Job } from 'bull';
 import { RoleService } from '../../../../role/role.service';
 import { roleQueue } from '../../queues';
@@ -13,11 +14,11 @@ export class RoleQueueConsumer {
     try {
       return await this.roleService.createSystemRoles();
     } catch (e) {
-      throw new Error(
-        typeof e.message === 'object'
-          ? `${e.message.error}: ${e.message.message}`
-          : e.message,
-      );
+      if (e instanceof BadRequestException) {
+        return job.moveToCompleted('System Roles have already been added');
+      }
+
+      throw new Error(typeof e.message === 'object' ? `${e.message.error}: ${e.message.message}` : e.message);
     }
   }
 }

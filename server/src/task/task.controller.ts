@@ -1,5 +1,5 @@
 import { Body, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { ApiController, ApiOperationId } from '../common/decorators/swagger.decorator';
 import { UseAuthGuards } from '../common/decorators/use-auth-guards.decorator';
 import { PermissionPrivilege } from '../common/permissions/permission-priviledge.enum';
@@ -15,7 +15,7 @@ export class TaskController {
 
   @Get()
   @UseAuthGuards({ task: PermissionPrivilege.Read })
-  @ApiOperationId()
+  @ApiOperationId({summary: 'Use Middleware'})
   async getAll(): Promise<TaskVm[]> {
     return this.taskService.getAll();
   }
